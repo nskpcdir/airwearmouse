@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AirMouse</string>
+    <string name="settings_title">Настройки</string>
+    <string name="status_disconnected">Не подключено</string>
+    <string name="status_connected">Подключено</string>
+    <string name="status_connecting">Подключение…</string>
+    <string name="gesture_left_click">Левый клик</string>
+    <string name="gesture_right_click">Правый клик</string>
+    <string name="gesture_hold">Удержание</string>
+    <string name="btn_lcm">ЛКМ</string>
+    <string name="btn_pcm">ПКМ</string>
+    <string name="btn_hold">Удерж</string>
+    <string name="btn_settings">⚙</string>
+    <string name="sensitivity_title">Чувствительность</string>
+    <string name="deadzone_title">Мёртвая зона</string>
+    <string name="gesture_sensitivity_title">Чувств. жестов</string>
+    <string name="enable_gyro_title">Гироскоп</string>
+    <string name="enable_accel_title">Акселерометр</string>
+    <string name="permission_required">Требуется разрешение Bluetooth</string>
+    <string name="permission_granted">Разрешение получено</string>
+</resources>
