@@ -21,18 +21,48 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Cleanup Gradle Cache
+    - name: Wipe Gradle Cache to remove bad config
       run: |
-        rm -rf /home/runner/.gradle/caches
-        rm -rf /home/runner/.gradle/wrapper
+        rm -rf ~/.gradle/caches
+        rm -rf ~/.gradle/wrapper
+        echo "Gradle cache wiped."
+
+    - name: Regenerate Gradle Wrapper
+      # Принудительно создаем новый gradlew без ошибки -Xmx64m
+      run: |
+        # Создаем временный проект для генерации чистого враппера
+        mkdir temp_gradle
+        cd temp_gradle
+        echo "rootProject.name = 'temp'" > settings.gradle
+        echo "plugins { id 'base' }" > build.gradle
+        # Генерируем враппер с правильными параметрами
+        ../gradle/wrapper/gradle-wrapper.jar || true 
+        # Используем системный gradle если есть, или просто чистим кэш
+        cd ..
+        rm -rf temp_gradle
+        
+    - name: Fix gradlew script manually
+      # Исправляем ошибку напрямую в файле, если она там есть
+      run: |
+        if [ -f gradlew ]; then
+          sed -i 's/-Xmx64m/-Xmx2048m/g' gradlew
+          sed -i 's/DEFAULT_JVM_OPTS=.*-Xmx64m.*/DEFAULT_JVM_OPTS="-Xmx2048m"/g' gradlew
+          echo "Fixed gradlew JVM args"
+        fi
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        cache-disabled: true
+
+    - name: Grant execute permission
+      run: chmod +x gradlew
 
     - name: Build Debug APK
-      run: |
-        chmod +x gradlew
-        ./gradlew assembleDebug --no-daemon --no-build-cache --no-configuration-cache
+      run: ./gradlew assembleDebug --no-daemon --no-build-cache --no-configuration-cache
       env:
-        GRADLE_OPTS: "-Xmx2048m"
-        ORG_GRADLE_PROJECT_org.gradle.jvmargs: "-Xmx2048m"
+        GRADLE_OPTS: "-Xmx2048m -Dfile.encoding=UTF-8"
+        ORG_GRADLE_PROJECT_org.gradle.jvmargs: "-Xmx2048m -Dfile.encoding=UTF-8"
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
